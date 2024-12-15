@@ -6,16 +6,16 @@ https://github.com/user-attachments/assets/4a047d22-2722-4b0e-a9c4-b796bfbd66ee
 
 # Dynamic Dot Grid Background Animation
 
-A sophisticated, responsive background animation featuring an elegant grid of animated dots with a subtle gradient overlay. This component creates a modern, engaging visual effect perfect for web applications and landing pages.
+A minimalist responsive background animation featuring an grid of animated dots with a subtle gradient overlay inspired by Google IDX website. This component creates a modern, engaging visual effect perfect for web applications and landing pages.
 
 ## Features
 
-- Smooth upward dot animation with intelligent opacity handling
+- Smooth upward dot animation with opacity handling
 - Responsive design that adapts to all screen sizes and orientations
 - Device pixel ratio awareness for crisp rendering on high-DPI displays
 - Subtle gradient overlay creating depth and visual interest
 - Optimized performance with canvas-based rendering
-- Mobile-friendly with iOS viewport compatibility
+- Mobile-friendly with iOS and safari viewport compatibility
 
 ## Usage
 
