@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="style.css">
+
+
+
+
+
+<body>
+    <!-- Paste this in the body of the page you want to use it on -->
+    <div class="background-wrapper">
+        <div class="gradient-container"></div>
+    </div>
+    <canvas id="gridCanvas"> </canvas>
+    
+ 
+
+
+
+
+<!-- Background Dot Script, place this at the bottom of the body -->
+<script>
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let gridSize = 25; // Keep the original grid size
+    
+    function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        initGrid(); // Reinitialize grid on resize
+    });
+
+    class GridDot {
+        constructor(x, y) {
+            this.baseX = x;
+            this.baseY = y;
+            this.x = x;
+            this.y = y;
+            this.size = 1;
+            this.speed = 0.1; // Speed for upward movement
+        }
+
+        update() {
+            // Only update Y position for upward movement
+            this.y -= this.speed;
+            
+            // Reset position to bottom if it moves off the top
+            if (this.y < 0) {
+                this.y = height;
+            }
+            
+            this.x = this.baseX; // Keep X position fixed
+        }
+
+        draw() {
+            // Calculate distance from top center as percentage
+            const distanceFromTop = this.y / height;
+            const distanceFromCenter = Math.abs(this.x - width/2) / (width/2);
+            
+            // Combine vertical and horizontal fade
+            let alpha = Math.max(0, 0.2 - (distanceFromTop * 0.2) - (distanceFromCenter * 0.15));
+            
+            // Additional spotlight effect
+            if (this.y > height * 0.7) {
+                alpha = alpha * (1 - ((this.y - height * 0.9) / (height * 0.5)));
+            }
+
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.fill();
+        }
+    }
+
+    const dots = [];
+
+    function initGrid() {
+        dots.length = 0;
+        const cols = Math.floor(width / gridSize) + 2;
+        const rows = Math.floor(height / gridSize) + 2;
+
+        for (let i = 0; i < cols; i++) {
+            for (let j = 0; j < rows; j++) {
+                dots.push(new GridDot(
+                    i * gridSize,
+                    j * gridSize
+                ));
+            }
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw all dots
+        dots.forEach(dot => {
+            dot.update();
+            dot.draw();
+        });
+        
+        // Then add subtle gradient overlay
+        const gradient = ctx.createRadialGradient(
+            width / 2, 0,    // Center x, y of the gradient (top middle)
+            0,               // Start radius
+            width / 2, 0,    // Same center x, y
+            width * 0.6      // End radius
+        );
+
+        gradient.addColorStop(0, 'rgba(111, 66, 193, 0.26)');    // Very subtle blue-purple
+        gradient.addColorStop(0.2, 'rgba(111, 66, 193, 0.2)');  // Very subtle deeper purple
+        gradient.addColorStop(1, 'transparent');                 // Fade to transparent
+
+        // Draw the subtle gradient on top
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        requestAnimationFrame(animate);
+    }
+
+    initGrid();
+    animate();
+</script>
+<script>
+    window.addEventListener('orientationchange', () => {
+        setTimeout(resizeCanvas, 100);
+        initGrid();
+    });
+</script>
+
+</body>
+</html>
